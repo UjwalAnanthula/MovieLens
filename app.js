@@ -4,22 +4,20 @@ const bodyParser = require('body-parser');
 const multer = require('multer');
 const session = require('express-session');
 const { MongoClient, ObjectId } = require('mongodb');
+require("dotenv").config();
 
 const app = express();
 
 // ===============================
 // Admin credentials
 // ===============================
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'password123';
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME;
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // ===============================
 // MongoDB connection
 // ===============================
-// Replace <DB_username> and <DB_password>
-// with your actual MongoDB Atlas credentials.
-const uri =
-    "mongodb+srv://<DB_username>:<DB_password>@cluster0.taww3.mongodb.net/?appName=Cluster0";
+const uri = process.env.MONGODB_URI;
 
 let db;
 
@@ -33,7 +31,7 @@ app.use(bodyParser.json());
 
 app.use(
     session({
-        secret: 'secret-key',
+        secret: process.env.SESSION_SECRET,
         resave: false,
         saveUninitialized: true
     })
@@ -510,7 +508,7 @@ async function startServer() {
 
         const PORT = process.env.PORT || 4000;
 
-        app.listen(PORT, () => {
+        app.listen(PORT, "0.0.0.0", () => {
             console.log(
                 `Server is running on port ${PORT}`
             );
