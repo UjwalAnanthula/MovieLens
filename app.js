@@ -19,7 +19,7 @@ const ADMIN_PASSWORD = 'password123';
 // Replace <DB_username> and <DB_password>
 // with your actual MongoDB Atlas credentials.
 const uri =
-    "mongodb+srv://Ujwal:Ujwal1234@cluster0.taww3.mongodb.net/?appName=Cluster0";
+    "mongodb+srv://<DB_username>:<DB_password>@cluster0.taww3.mongodb.net/?appName=Cluster0";
 
 let db;
 
