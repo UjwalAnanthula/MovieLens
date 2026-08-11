@@ -6,6 +6,21 @@ The application allows users to browse and search for movies, explore movie deta
 
 ---
 
+## 📸 Screenshots
+
+### MovieLens Home Page
+
+![MovieLens Home Page](screenshots/MovieLens-1.png)
+
+### Movie Details, Trailer & Reviews
+
+![Movie Details, Trailer and Reviews](screenshots/MovieLens-2.png)
+
+---
+
+
+---
+
 ## 🚀 Quick Setup
 
 For a quick installation on Windows:
