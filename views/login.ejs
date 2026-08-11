@@ -1,34 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - MovieLens</title>
-    <link rel="stylesheet" href="/css/login.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Admin Login — MovieLens
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/login.css"
+    >
 
 </head>
-<body>
-    <header>
-        <h1>Login</h1>
-    </header>
 
-    <div class="login-container">
+
+<body class="auth-page">
+
+
+<main class="auth-shell">
+
+
+    <a
+        href="/"
+        class="brand auth-brand"
+    >
+
+        <span class="brand-mark">
+            M
+        </span>
+
+        <span>
+            MovieLens
+        </span>
+
+    </a>
+
+
+    <section class="auth-card">
+
+
+        <span class="eyebrow">
+            ADMIN AREA
+        </span>
+
+
+        <h1>
+            Welcome back.
+        </h1>
+
+
+        <p class="auth-intro">
+            Sign in to manage the
+            MovieLens collection.
+        </p>
+
+
         <% if (error) { %>
-            <p class="error-message"><%= error %></p>
+
+            <div class="error-message">
+                <%= error %>
+            </div>
+
         <% } %>
-        <form action="/login" method="POST">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required>
-            </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
-            </div>
 
-            <button type="submit" class="login-btn">Login</button>
+        <form
+            action="/login"
+            method="POST"
+            class="auth-form"
+        >
+
+
+            <label for="username">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Admin username"
+                autocomplete="username"
+                required
+            >
+
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Password"
+                autocomplete="current-password"
+                required
+            >
+
+
+            <button
+                type="submit"
+                class="button button-primary"
+            >
+                Sign in
+            </button>
+
+
         </form>
-    </div>
+
+
+        <a
+            href="/"
+            class="back-link"
+        >
+            ← Back to MovieLens
+        </a>
+
+
+    </section>
+
+
+    <p class="auth-footer">
+        MovieLens · Collection management
+    </p>
+
+
+</main>
+
+
 </body>
+
 </html>

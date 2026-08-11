@@ -1,124 +1,458 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieLens - View Details</title>
-    <link rel="stylesheet" href="/css/viewdetails.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        <%= movie.title %> — MovieLens
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="/css/viewdetails.css"
+    >
+
 </head>
+
+
 <body>
-    <header>
-        <h1>MovieLens</h1>
-        <div class="search-container">
-            <input type="text" id="search-bar" placeholder="Search for movies..." onkeyup="searchMovies()">
-            
-            <!-- Always display "Back to Movies" button -->
-            <a href="/"><button>Back to Movies</button></a>
 
-            <!-- Conditionally display Logout button for admin -->
+
+<header class="site-header">
+
+    <div class="header-inner">
+
+        <a href="/" class="brand">
+
+            <span class="brand-mark">
+                M
+            </span>
+
+            <span>
+                MovieLens
+            </span>
+
+        </a>
+
+
+        <div class="header-actions">
+
+            <a
+                href="/"
+                class="button button-ghost"
+            >
+                ← All Movies
+            </a>
+
+
             <% if (isAdmin) { %>
-                <a href="/logout"><button>Logout</button></a>
-            <% } %>
-        </div>
-    </header>
 
-    <section class="movie-details-section">
-        <h2><%= movie.title %></h2>
-        <div class="movie-details">
+                <a
+                    href="/addMovie"
+                    class="button button-primary"
+                >
+                    + Add Movie
+                </a>
+
+                <a
+                    href="/logout"
+                    class="button button-ghost"
+                >
+                    Logout
+                </a>
+
+            <% } %>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="details-page">
+
+
+    <a
+        href="/"
+        class="back-link"
+    >
+        ← Back to collection
+    </a>
+
+
+    <section class="movie-hero">
+
+
+        <div class="poster-column">
+
             <% if (movie.poster) { %>
-                <img src="<%= movie.poster %>" alt="<%= movie.title %>" class="movie-poster">
+
+                <img
+                    src="<%= movie.poster %>"
+                    alt="<%= movie.title %>"
+                    class="movie-poster"
+                >
+
             <% } else { %>
-                <div class="no-image">No Image Available</div>
+
+                <div class="poster-placeholder">
+                    MovieLens
+                </div>
+
             <% } %>
-            <div class="movie-info">
-                <p><strong>Description:</strong> <%= movie.description %></p>
-                <p><strong>Genre:</strong> <%= movie.genre %></p>
-                <p><strong>Average Rating:</strong> <%= movie.averageRating %></p>
-                <section class="movie-actors">
-                    <h3>Actors</h3>
-                    <ul>
-                        <% if (movie.actors && movie.actors.length > 0) { %>
-                            <% movie.actors.forEach(actor => { %>
-                                <li><%= actor %></li>
-                            <% }) %>
-                        <% } else { %>
-                            <p>No actors listed for this movie.</p>
-                        <% } %>
-                    </ul>
-                </section>
-            </div>
-            
+
         </div>
 
-        
-    
-        <!-- Display Trailer -->
-        <% if (movie.trailer) { %>
-            <div class="movie-trailer">
-                <h3>Watch the Trailer:</h3>
-                <iframe width="100%" height="500" src="<%= movie.trailer %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+        <div class="movie-info">
+
+            <span class="eyebrow">
+                MOVIE DETAILS
+            </span>
+
+
+            <h1>
+                <%= movie.title %>
+            </h1>
+
+
+            <div class="detail-tags">
+
+                <% if (
+                    movie.genre &&
+                    movie.genre.length
+                ) { %>
+
+                    <% movie.genre.forEach(
+                        function(genre)
+                    { %>
+
+                        <span>
+                            <%= genre %>
+                        </span>
+
+                    <% }); %>
+
+                <% } %>
+
             </div>
-        <% } %>
-    
-        <!-- Display Actors -->
-        
-    
-        <% if (isAdmin) { %>
-            <form action="/deleteMovie/<%= movie._id %>" method="POST">
-                <button type="submit" class="delete-btn">Delete Movie</button>
-            </form>
-        <% } %>
-    
-        <!-- Add Review Section -->
-        <section class="add-review-section">
-            <h3>Add a Review</h3>
-            <form action="/addReview/<%= movie._id %>" method="POST">
-                <label for="username">Your Name:</label>
-                <input type="text" name="username" required>
-                <label for="rating">Rating:</label>
-                <input type="number" name="rating" min="1" max="5" required>
-                <label for="reviewText">Review:</label>
-                <textarea name="reviewText" required></textarea>
-                <button type="submit">Submit Review</button>
-            </form>
-        </section>
-    
-        <!-- Reviews Section -->
-        <section class="reviews-section">
-            <h3>Reviews</h3>
-            <% movie.reviews.forEach(function(review) { %>
-                <div class="review-card">
-                    <p><strong><%= review.user %>:</strong> <%= review.text %></p>
+
+
+            <div class="rating-summary">
+
+                <span class="rating-star">
+                    ★
+                </span>
+
+                <div>
+
+                    <strong>
+                        <%= movie.averageRating || '0.0' %>
+                    </strong>
+
+                    <small>
+                        average rating
+                    </small>
+
                 </div>
-            <% }); %>
-        </section>
+
+            </div>
+
+
+            <p class="description">
+                <%= movie.description %>
+            </p>
+
+
+            <div class="cast-block">
+
+                <span class="label">
+                    CAST
+                </span>
+
+                <p>
+
+                    <%= movie.actors &&
+                        movie.actors.length
+                        ? movie.actors.join(' · ')
+                        : 'No cast information available.'
+                    %>
+
+                </p>
+
+            </div>
+
+
+            <% if (movie.trailer) { %>
+
+                <a
+                    href="#trailer"
+                    class="button button-primary"
+                >
+                    Watch Trailer ↓
+                </a>
+
+            <% } %>
+
+
+            <% if (isAdmin) { %>
+
+                <form
+                    action="/deleteMovie/<%= movie._id %>"
+                    method="POST"
+                    onsubmit="return confirm('Delete this movie?');"
+                    class="delete-form"
+                >
+
+                    <button
+                        type="submit"
+                        class="danger-link"
+                    >
+                        Delete movie
+                    </button>
+
+                </form>
+
+            <% } %>
+
+
+        </div>
+
     </section>
-    
 
-    <script>
-        // Search functionality
-        function searchMovies() {
-            const searchQuery = document.getElementById('search-bar').value.toLowerCase();
-            const genreRows = document.querySelectorAll('.genre-row');
 
-            genreRows.forEach(function(row) {
-                const movieCards = row.querySelectorAll('.movie-card');
-                let isAnyMovieVisible = false;
+    <% if (movie.trailer) { %>
 
-                movieCards.forEach(function(card) {
-                    const title = card.querySelector('h3').textContent.toLowerCase();
-                    if (title.includes(searchQuery)) {
-                        card.style.display = 'block';
-                        isAnyMovieVisible = true;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+        <section
+            class="trailer-section"
+            id="trailer"
+        >
 
-                // Show or hide the entire genre row based on movie visibility
-                row.style.display = isAnyMovieVisible ? 'block' : 'none';
-            });
-        }
-    </script>
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-kicker">
+                        TRAILER
+                    </span>
+
+                    <h2>
+                        Watch the trailer
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="trailer-frame">
+
+                <iframe
+                    src="<%= movie.trailer %>"
+                    title="<%= movie.title %> trailer"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                ></iframe>
+
+            </div>
+
+        </section>
+
+    <% } %>
+
+
+    <section class="reviews-layout">
+
+
+        <div class="review-form-panel">
+
+            <span class="section-kicker">
+                YOUR TAKE
+            </span>
+
+            <h2>
+                Leave a review
+            </h2>
+
+            <p>
+                Share your thoughts and rate
+                this movie.
+            </p>
+
+
+            <form
+                action="/addReview/<%= movie._id %>"
+                method="POST"
+                class="review-form"
+            >
+
+
+                <label for="username">
+                    Your name
+                </label>
+
+                <input
+                    id="username"
+                    type="text"
+                    name="username"
+                    placeholder="Enter your name"
+                    required
+                >
+
+
+                <label for="rating">
+                    Rating
+                </label>
+
+                <input
+                    id="rating"
+                    type="number"
+                    name="rating"
+                    min="1"
+                    max="5"
+                    placeholder="1–5"
+                    required
+                >
+
+
+                <label for="reviewText">
+                    Review
+                </label>
+
+                <textarea
+                    id="reviewText"
+                    name="reviewText"
+                    rows="5"
+                    placeholder="What did you think?"
+                    required
+                ></textarea>
+
+
+                <button
+                    type="submit"
+                    class="button button-primary"
+                >
+                    Submit review
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <div class="reviews-panel">
+
+
+            <div class="section-heading">
+
+                <div>
+
+                    <span class="section-kicker">
+                        COMMUNITY
+                    </span>
+
+                    <h2>
+                        Reviews
+                    </h2>
+
+                </div>
+
+
+                <span class="review-count">
+
+                    <%= movie.reviews
+                        ? movie.reviews.length
+                        : 0 %>
+
+                </span>
+
+            </div>
+
+
+            <% if (
+                movie.reviews &&
+                movie.reviews.length
+            ) { %>
+
+
+                <div class="review-list">
+
+                    <% movie.reviews
+                        .slice()
+                        .reverse()
+                        .forEach(
+                            function(review)
+                    { %>
+
+
+                        <article
+                            class="review-card"
+                        >
+
+                            <div class="review-top">
+
+                                <strong>
+                                    <%= review.user %>
+                                </strong>
+
+                                <span>
+                                    Viewer
+                                </span>
+
+                            </div>
+
+
+                            <p>
+                                <%= review.text %>
+                            </p>
+
+                        </article>
+
+
+                    <% }); %>
+
+                </div>
+
+
+            <% } else { %>
+
+
+                <div class="empty-reviews">
+
+                    <span>
+                        ✦
+                    </span>
+
+                    <h3>
+                        Be the first to review
+                    </h3>
+
+                    <p>
+                        No reviews yet.
+                        Start the conversation.
+                    </p>
+
+                </div>
+
+
+            <% } %>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
 </body>
+
 </html>

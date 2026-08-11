@@ -2,80 +2,458 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MovieLens</title>
-    <link rel="stylesheet" href="/css/styles.css">
-</head>
-<body>
-    <header>
-        <h1>MovieLens</h1>
-        <div class="search-container">
-            <form action="/search" method="GET">
-                <input type="text" name="query" id="search-bar" placeholder="Search for movies, genre or actors..." required>
-                <button type="submit">Search</button>
-            </form>
-            <% if (isAdmin) { %>
-                <a href="/addMovie"><button>Add Movie</button></a>
-            <% } %>
-        </div>
-    </header>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <!-- Movies Section Grouped by Genre -->
-    <section class="all-movies-section">
-        <h2>All Movies</h2>
-        <div id="movies-container" class="movies-container">
-            <% let genreIndex = 0; %>
-            <% for (const genre in groupedMovies) { %>
-                <div class="genre-row">
-                    <h3 class="genre-title"><%= genre %></h3>
-                    <div class="movie-list">
-                        <% groupedMovies[genre].forEach(function(movie) { %>
-                            <div class="movie-card" data-title="<%= movie.title %>" data-genre="<%= movie.genre.join(', ').toLowerCase() %>" data-actors="<%= movie.actors.join(', ').toLowerCase() %>">
-                                <% if (movie.poster) { %>
-                                    <img src="<%= movie.poster %>" alt="<%= movie.title %>" style="height: 200px; object-fit: cover;">
-                                <% } else { %>
-                                    <div class="no-image">No Image Available</div>
-                                <% } %>
-                                <h3><%= movie.title %></h3>
-                                <p><%= movie.description %></p>
-                                <a href="/viewDetails/<%= movie._id %>">
-                                    <button>View Details</button>
-                                </a>
-                                <% if (isAdmin) { %>
-                                    <form action="/deleteMovie/<%= movie._id %>" method="POST">
-                                        <button type="submit">Delete Movie</button>
-                                    </form>
-                                <% } %>
-                            </div>
-                        <% }); %>
-                    </div>
-                </div>
-                <% genreIndex++; %>
+    <title>MovieLens — Discover Great Movies</title>
+
+    <link
+        rel="stylesheet"
+        href="/css/styles.css"
+    >
+</head>
+
+<body>
+
+<header class="site-header">
+
+    <div class="header-inner">
+
+        <a href="/" class="brand">
+            <span class="brand-mark">M</span>
+            <span>MovieLens</span>
+        </a>
+
+        <form
+            action="/search"
+            method="GET"
+            class="search-form"
+            id="search-form"
+        >
+
+            <span class="search-icon">⌕</span>
+
+            <input
+                type="search"
+                name="query"
+                id="search-bar"
+                placeholder="Search movies, actors or genres..."
+                autocomplete="off"
+            >
+
+            <button type="submit">
+                Search
+            </button>
+
+        </form>
+
+        <nav class="header-actions">
+
+            <% if (isAdmin) { %>
+
+                <a
+                    href="/addMovie"
+                    class="button button-primary"
+                >
+                    + Add Movie
+                </a>
+
+                <a
+                    href="/logout"
+                    class="button button-ghost"
+                >
+                    Logout
+                </a>
+
+            <% } else { %>
+
+                <a
+                    href="/login"
+                    class="button button-ghost"
+                >
+                    Admin
+                </a>
+
             <% } %>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+<main class="page-shell">
+
+    <section class="hero">
+
+        <div class="hero-copy">
+
+            <span class="eyebrow">
+                YOUR MOVIE COLLECTION
+            </span>
+
+            <h1>
+                Find something<br>
+                <em>worth watching.</em>
+            </h1>
+
+            <p>
+                Explore movies by genre, discover
+                new favourites, and see what other
+                viewers think.
+            </p>
+
         </div>
+
+        <div class="hero-stat">
+
+            <strong>
+                <%= movies ? movies.length : 0 %>
+            </strong>
+
+            <span>
+                movies in the collection
+            </span>
+
+        </div>
+
     </section>
 
-    <script>
-        // Search functionality for title, genre, and actors
-        const searchForm = document.querySelector('form');
-        searchForm.addEventListener('submit', function(event) {
-            const searchQuery = document.getElementById('search-bar').value.toLowerCase();
-            const movieCards = document.querySelectorAll('.movie-card');
-            
-            movieCards.forEach(function(card) {
-                const title = card.dataset.title.toLowerCase();
-                const genre = card.dataset.genre.toLowerCase();
-                const actors = card.dataset.actors.toLowerCase();
-                
-                if (title.includes(searchQuery) || genre.includes(searchQuery) || actors.includes(searchQuery)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
+
+    <section class="catalog-section">
+
+        <div class="section-heading">
+
+            <div>
+
+                <span class="section-kicker">
+                    EXPLORE
+                </span>
+
+                <h2>
+                    All Movies
+                </h2>
+
+            </div>
+
+            <span
+                class="results-count"
+                id="results-count"
+            ></span>
+
+        </div>
+
+
+        <div
+            id="empty-state"
+            class="empty-state"
+            hidden
+        >
+
+            <div class="empty-icon">
+                ⌕
+            </div>
+
+            <h3>
+                No movies found
+            </h3>
+
+            <p>
+                Try a different title, actor or genre.
+            </p>
+
+        </div>
+
+
+        <div
+            id="movies-container"
+            class="movies-container"
+        >
+
+            <% for (
+                const genre in groupedMovies
+            ) { %>
+
+                <section class="genre-row">
+
+                    <div class="genre-heading">
+
+                        <h3>
+                            <%= genre %>
+                        </h3>
+
+                        <span>
+                            <%= groupedMovies[genre].length %>
+                            title<%= groupedMovies[genre].length === 1 ? '' : 's' %>
+                        </span>
+
+                    </div>
+
+
+                    <div class="movie-list">
+
+                        <% groupedMovies[genre].forEach(
+                            function(movie)
+                        { %>
+
+                            <article
+                                class="movie-card"
+                                data-title="<%= movie.title %>"
+                                data-genre="<%= Array.isArray(movie.genre) ? movie.genre.join(', ') : movie.genre %>"
+                                data-actors="<%= Array.isArray(movie.actors) ? movie.actors.join(', ') : movie.actors %>"
+                            >
+
+                                <a
+                                    href="/viewDetails/<%= movie._id %>"
+                                    class="poster-link"
+                                >
+
+                                    <% if (movie.poster) { %>
+
+                                        <img
+                                            src="<%= movie.poster %>"
+                                            alt="<%= movie.title %>"
+                                            loading="lazy"
+                                        >
+
+                                    <% } else { %>
+
+                                        <div class="poster-placeholder">
+                                            <span>
+                                                MovieLens
+                                            </span>
+                                        </div>
+
+                                    <% } %>
+
+                                    <span class="poster-overlay">
+
+                                        View details
+
+                                        <span>
+                                            →
+                                        </span>
+
+                                    </span>
+
+                                </a>
+
+
+                                <div class="movie-card-body">
+
+                                    <div class="movie-meta">
+
+                                        <span>
+                                            <%= Array.isArray(movie.genre)
+                                                ? movie.genre[0]
+                                                : movie.genre %>
+                                        </span>
+
+                                        <% if (movie.averageRating) { %>
+
+                                            <span class="rating">
+                                                ★ <%= movie.averageRating %>
+                                            </span>
+
+                                        <% } %>
+
+                                    </div>
+
+
+                                    <h3>
+                                        <%= movie.title %>
+                                    </h3>
+
+
+                                    <p>
+                                        <%= movie.description %>
+                                    </p>
+
+
+                                    <div class="card-footer">
+
+                                        <a
+                                            href="/viewDetails/<%= movie._id %>"
+                                            class="details-link"
+                                        >
+                                            View details
+                                            <span>→</span>
+                                        </a>
+
+
+                                        <% if (isAdmin) { %>
+
+                                            <form
+                                                action="/deleteMovie/<%= movie._id %>"
+                                                method="POST"
+                                                onsubmit="return confirm('Delete this movie?');"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="delete-icon"
+                                                    aria-label="Delete movie"
+                                                >
+                                                    ×
+                                                </button>
+
+                                            </form>
+
+                                        <% } %>
+
+                                    </div>
+
+                                </div>
+
+                            </article>
+
+                        <% }); %>
+
+                    </div>
+
+                </section>
+
+            <% } %>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div>
+        MovieLens
+    </div>
+
+    <span>
+        Discover. Rate. Review.
+    </span>
+
+</footer>
+
+
+<script>
+
+const searchBar =
+    document.getElementById('search-bar');
+
+const searchForm =
+    document.getElementById('search-form');
+
+const rows =
+    [
+        ...document.querySelectorAll(
+            '.genre-row'
+        )
+    ];
+
+const emptyState =
+    document.getElementById(
+        'empty-state'
+    );
+
+const resultsCount =
+    document.getElementById(
+        'results-count'
+    );
+
+
+function filterMovies() {
+
+    const query =
+        searchBar.value
+            .trim()
+            .toLowerCase();
+
+    let visible = 0;
+
+
+    rows.forEach(row => {
+
+        let rowVisible = 0;
+
+        row
+            .querySelectorAll(
+                '.movie-card'
+            )
+            .forEach(card => {
+
+                const haystack = [
+
+                    card.dataset.title,
+
+                    card.dataset.genre,
+
+                    card.dataset.actors
+
+                ]
+                    .join(' ')
+                    .toLowerCase();
+
+
+                const match =
+                    !query ||
+                    haystack.includes(query);
+
+
+                card.hidden = !match;
+
+
+                if (match) {
+
+                    visible++;
+                    rowVisible++;
+
                 }
+
             });
-            
-            event.preventDefault(); // Prevent the form from submitting the default way
-        });
-    </script>
+
+
+        row.hidden =
+            rowVisible === 0;
+
+    });
+
+
+    emptyState.hidden =
+        visible !== 0;
+
+
+    resultsCount.textContent =
+        query
+            ? `${visible} result${visible === 1 ? '' : 's'}`
+            : '';
+
+}
+
+
+searchBar.addEventListener(
+    'input',
+    filterMovies
+);
+
+
+searchForm.addEventListener(
+    'submit',
+    function () {
+
+        /*
+         * Do not prevent the form from submitting.
+         *
+         * This preserves your original
+         * /search backend route.
+         */
+
+    }
+);
+
+</script>
+
 </body>
 </html>
